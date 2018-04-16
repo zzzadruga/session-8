@@ -1,5 +1,4 @@
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Test3 extends AbstractTest {
     private static volatile AtomicBoolean val = new AtomicBoolean();
@@ -37,6 +36,19 @@ public class Test3 extends AbstractTest {
     private static Thread th() {
         return new Thread(() -> {
             // Правки можно внисить от этой линии
+                try {
+                    synchronized (val) {
+                        if (val.compareAndSet(false, true)) {
+                            put(1);
+                        } else {
+                            put(2);
+                            val = null;
+                        }
+                    }
+                } catch (NullPointerException e) {
+                    put(3);
+                    val = new AtomicBoolean();
+                }
 
             // До этой
         });
