@@ -36,20 +36,16 @@ public class Test3 extends AbstractTest {
     private static Thread th() {
         return new Thread(() -> {
             // Правки можно внисить от этой линии
-                try {
-                    synchronized (val) {
-                        if (val.compareAndSet(false, true)) {
-                            put(1);
-                        } else {
-                            put(2);
-                            val = null;
-                        }
-                    }
-                } catch (NullPointerException e) {
+            if (Thread.currentThread().getId() % 3 == 0){
+                put(1);
+            } else {
+                if (val.compareAndSet(false, true)){
+                    put(2);
+                } else {
                     put(3);
-                    val = new AtomicBoolean();
+                    val.set(false);
                 }
-
+            }
             // До этой
         });
     }
